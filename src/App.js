@@ -1,54 +1,61 @@
 import './App.css';
 import { useState, useEffect } from "react";
-import axios from 'axios';
-const axiosinstence = axios.create(
-  { baseURL: 'http://localhost:8000/' }
-)
-
-const config = {
-  headers: {
-    "Access-Control-Allow-Origin": "http://localhost:8000/",
-  }
-}
 
 function App() {
   const [task, setTask] = useState([]);
 
-
-  const getTasks = async () => {
-    const result = await axiosinstence.get('tasks', {}, config).then(
-      (response) => {
-        console.log(response)
-        setTask(response.data)
-      }
-    )
+  const getTask = () => {
+    fetch("http://localhost:8000/tasks/")
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        console.log(data);
+        setTask(data);
+      })
   };
 
-  const addTask = async () => {
-    const result = await axiosinstence.post('tasks', { title: 'This is a title', description: 'This is an example of discription' }).then(
-      (response) => {
-        console.log(response)
-      }
-    )
+  const adddata = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: 'This is a title', description: 'This is an example of discription' }),
   };
-  const updateTask = async () => {
-    const result = await axiosinstence.put('tasks/1/', { title: 'This is updated title', description: 'This is an updated example of discription', status: 'working' }).then(
-      (response) => {
-        console.log(response)
-      }
-    )
+
+  const addTask = () => {
+    fetch("http://localhost:8000/tasks/", adddata)
+      .then(response => {
+        getTask();
+      })
+  }
+
+  const updatedata = {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: 'this is task 12', description: 'this is task 12 discription' }),
   };
-  const deleteTask = async () => {
-    const result = await axiosinstence.get('tasks/2/').then(
-      (response) => {
-        console.log(response)
-      } 
-    )
-  };
+
+  const updateTask = () => {
+    let id = 12;
+    fetch("http://localhost:8000/tasks/"+ id + "/", updatedata)
+      .then(response => {
+        getTask();
+      })
+  }
+
+
+  const delateTask = () => {
+    let id = 7;
+    fetch("http://localhost:8000/tasks/"+ id + "/", {method:'DELETE'})
+      .then(response => {
+        getTask();
+      })
+  }
+
+
 
   useEffect(() => {
     // addTask();
-    // getTasks();
+    // delateTask();
   }, [])
 
   return (
